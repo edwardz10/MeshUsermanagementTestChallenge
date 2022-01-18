@@ -1,0 +1,17 @@
+server.servlet.context-path: /usermanagement/v1
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/usermanagement
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
