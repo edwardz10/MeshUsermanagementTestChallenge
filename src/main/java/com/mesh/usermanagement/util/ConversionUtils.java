@@ -16,11 +16,19 @@ public class ConversionUtils {
   public static User convert(UserEntity userEntity) {
     val user = new User();
     user.setId(userEntity.getId());
+    user.setName(userEntity.getName());
     user.setAge(userEntity.getAge());
     user.setEmail(userEntity.getEmail());
-    user.setProfile(convert(userEntity.getProfile()));
-    user.setPhones(userEntity.getPhones().stream()
-        .map(ConversionUtils::convert).collect(Collectors.toSet()));
+
+    if (userEntity.getProfile() != null) {
+      user.setProfile(convert(userEntity.getProfile()));
+    }
+
+    if (CollectionUtils.isNotEmpty(userEntity.getPhones())) {
+      user.setPhones(userEntity.getPhones().stream()
+          .map(ConversionUtils::convert).collect(Collectors.toSet()));
+    }
+
     return user;
   }
 
@@ -42,6 +50,7 @@ public class ConversionUtils {
   public static UserEntity convert(User user) {
     val userEntity = new UserEntity();
     userEntity.setId(user.getId());
+    userEntity.setName(user.getName());
     userEntity.setAge(user.getAge());
     userEntity.setEmail(user.getEmail());
 

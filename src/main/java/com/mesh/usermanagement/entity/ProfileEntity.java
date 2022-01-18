@@ -15,8 +15,8 @@ public class ProfileEntity {
 
     private Integer cash;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 
 }

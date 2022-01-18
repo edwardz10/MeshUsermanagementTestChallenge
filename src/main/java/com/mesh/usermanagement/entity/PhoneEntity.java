@@ -17,7 +17,7 @@ public class PhoneEntity implements Serializable {
     @Column(unique = true)
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
 }

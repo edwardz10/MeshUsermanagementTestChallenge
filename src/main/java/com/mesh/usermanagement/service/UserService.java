@@ -29,14 +29,20 @@ public class UserService {
   public User createUser(User user) {
     UserEntity userEntity = userRepository.save(ConversionUtils.convert(user));
     ProfileEntity profileEntity = null;
-    Set<PhoneEntity> phoneSet = new HashSet<>();
+    Set<PhoneEntity> phoneEntitiesSet = new HashSet<>();
 
     if (user.getProfile() != null) {
-      profileEntity = profileRepository.save(ConversionUtils.convert(user.getProfile()));
+      profileEntity = ConversionUtils.convert(user.getProfile());
+      profileEntity.setUser(userEntity);
+      profileEntity = profileRepository.save(profileEntity);
     }
 
     if (CollectionUtils.isNotEmpty(user.getPhones())) {
-      user.getPhones().forEach(phone -> phoneSet.add(phoneRepository.save(ConversionUtils.convert(phone))));
+      user.getPhones().forEach(phone -> {
+        PhoneEntity phoneEntity = ConversionUtils.convert(phone);
+        phoneEntity = phoneRepository.save(phoneEntity);
+        phoneEntitiesSet.add(phoneEntity);
+      });
     }
 
     User resultUser = ConversionUtils.convert(userEntity);
@@ -45,8 +51,8 @@ public class UserService {
       resultUser.setProfile(ConversionUtils.convert(profileEntity));
     }
 
-    if (CollectionUtils.isNotEmpty(phoneSet)) {
-      resultUser.setPhones(phoneSet.stream().map(ConversionUtils::convert).collect(Collectors.toSet()));
+    if (CollectionUtils.isNotEmpty(phoneEntitiesSet)) {
+      resultUser.setPhones(phoneEntitiesSet.stream().map(ConversionUtils::convert).collect(Collectors.toSet()));
     }
 
     return resultUser;
