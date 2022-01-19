@@ -29,6 +29,14 @@ public class UserService {
 
   public User getUser(String userId) {
     val userEntity = userRepository.findByExternalId(userId);
-    return ConversionUtils.convert(userEntity);
+    return userEntity == null ? null : ConversionUtils.convert(userEntity);
+  }
+
+  public void deleteUser(String userId) {
+    val userEntity = userRepository.findByExternalId(userId);
+
+    if (userEntity != null) {
+      userRepository.delete(userEntity);
+    }
   }
 }
