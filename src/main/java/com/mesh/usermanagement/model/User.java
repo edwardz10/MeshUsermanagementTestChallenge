@@ -1,5 +1,6 @@
 package com.mesh.usermanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.springframework.lang.NonNull;
 
@@ -11,11 +12,13 @@ import java.util.Set;
 
 @Data
 public class User {
-    private Long id;
+    private String id;
     @NotNull
     private String name;
+    @NotNull
     @Min(1)
     private Integer age;
+    @NotNull
     @Email
     private String email;
     private Set<Phone> phones;
