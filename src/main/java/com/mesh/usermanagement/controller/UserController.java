@@ -1,5 +1,6 @@
 package com.mesh.usermanagement.controller;
 
+import com.mesh.usermanagement.exception.UserManagementException;
 import com.mesh.usermanagement.model.User;
 import com.mesh.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,16 @@ public class UserController {
     log.info("Request to create user: {}", user);
     User createdUser = userService.createUser(user);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+  }
+
+  @PutMapping(value = "/users/{userId}", produces = "application/json")
+  public ResponseEntity<User> getUser(@PathVariable(value = "userId") String userId, @RequestBody @Valid User user)
+      throws UserManagementException {
+    log.info("Request to get a user by Id: {}", userId);
+    User updatedUser = userService.updateUser(userId, user);
+    return updatedUser == null
+        ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        : ResponseEntity.status(HttpStatus.OK).body(updatedUser);
   }
 
   @GetMapping(value = "/users/{userId}", produces = "application/json")

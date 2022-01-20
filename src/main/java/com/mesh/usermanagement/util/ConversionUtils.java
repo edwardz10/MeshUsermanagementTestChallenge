@@ -6,6 +6,7 @@ import com.mesh.usermanagement.entity.UserEntity;
 import com.mesh.usermanagement.model.Phone;
 import com.mesh.usermanagement.model.Profile;
 import com.mesh.usermanagement.model.User;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class ConversionUtils {
 
   public static User convert(UserEntity userEntity) {
@@ -91,5 +93,27 @@ public class ConversionUtils {
         : profile.getId());
     profileEntity.setCash(profile.getKopeks() + profile.getRoubles()*100);
     return profileEntity;
+  }
+
+  public static void updatePhones(User user, UserEntity userEntity) {
+    for (val phone : user.getPhones()) {
+      for (val phoneEntity : userEntity.getPhones()) {
+        if (phone.getId() != null) {
+          if (phone.getId().equals(phoneEntity.getExternalId())) {
+            if (phone.getValue().equals(phoneEntity.getValue())) {
+              log.info("Phone {} ({}) stays the same", phone.getId(), phone.getValue());
+            } else {
+              log.info("Phone {} is updated; new number is {}", phone.getId(), phone.getValue());
+              phoneEntity.setValue(phone.getValue());
+            }
+          }
+        } else {
+          log.info("New phone: ({})", phone.getValue());
+          val newPhoneEntity = convert(phone);
+          newPhoneEntity.setUser(userEntity);
+          userEntity.addPhone(newPhoneEntity);
+        }
+      }
+    }
   }
 }
