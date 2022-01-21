@@ -2,7 +2,7 @@ package com.mesh.usermanagement.service;
 
 import com.mesh.usermanagement.entity.ProfileEntity;
 import com.mesh.usermanagement.entity.UserEntity;
-import com.mesh.usermanagement.exception.UserManagementException;
+import com.mesh.usermanagement.exception.UserManagementServiceException;
 import com.mesh.usermanagement.model.User;
 import com.mesh.usermanagement.repository.PhoneRepository;
 import com.mesh.usermanagement.repository.ProfileRepository;
@@ -14,7 +14,6 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +32,7 @@ public class UserService {
   }
 
   @Transactional
-  public User updateUser(String userId, User user) throws UserManagementException {
+  public User updateUser(String userId, User user) throws UserManagementServiceException {
     UserEntity userEntity = userRepository.findByExternalId(userId);
 
     if (userEntity == null) {
@@ -41,11 +40,11 @@ public class UserService {
       return null;
     } else {
       if (!userEntity.getName().equals(user.getName())) {
-        throw new UserManagementException("User name does not match");
+        throw new UserManagementServiceException("User name does not match");
       }
 
       if (!userEntity.getAge().equals(user.getAge())) {
-        throw new UserManagementException("User age does not match");
+        throw new UserManagementServiceException("User age does not match");
       }
 
       /**

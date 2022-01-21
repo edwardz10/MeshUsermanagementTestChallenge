@@ -1,4 +1,4 @@
-package com.mesh.usermanagement.exception;
+package com.mesh.usermanagement.model;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,12 +1,10 @@
 package com.mesh.usermanagement.controller;
 
-import com.mesh.usermanagement.exception.UserManagementException;
+import com.mesh.usermanagement.exception.UserManagementServiceException;
 import com.mesh.usermanagement.model.User;
 import com.mesh.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +26,7 @@ public class UserController {
 
   @PutMapping(value = "/users/{userId}", produces = "application/json")
   public ResponseEntity<User> getUser(@PathVariable(value = "userId") String userId, @RequestBody @Valid User user)
-      throws UserManagementException {
+      throws UserManagementServiceException {
     log.info("Request to get a user by Id: {}", userId);
     User updatedUser = userService.updateUser(userId, user);
     return updatedUser == null

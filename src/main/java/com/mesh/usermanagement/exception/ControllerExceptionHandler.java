@@ -1,7 +1,7 @@
 package com.mesh.usermanagement.exception;
 
+import com.mesh.usermanagement.model.ApiErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.*;
 
 @ControllerAdvice
 @Slf4j
@@ -40,11 +39,33 @@ public class ControllerExceptionHandler {
 		return getResponseEntity(apiErrorResponse);
 	}
 
-	@ExceptionHandler(value = {UserManagementException.class})
-	public ResponseEntity<ApiErrorResponse> handleGenericException(UserManagementException ex) {
+	@ExceptionHandler(value = {UserManagementServiceException.class})
+	public ResponseEntity<ApiErrorResponse> handleServiceException(UserManagementServiceException ex) {
 		log.error(ex.getMessage());
 		ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
 				.code(SC_BAD_REQUEST)
+				.errorMesage(ex.getErrorMessage())
+				.build();
+
+		return getResponseEntity(apiErrorResponse);
+	}
+
+	@ExceptionHandler(value = {UserManagementNotAuthorizedException.class})
+	public ResponseEntity<ApiErrorResponse> handleNotAuthorizedException(UserManagementNotAuthorizedException ex) {
+		log.error(ex.getMessage());
+		ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
+				.code(SC_UNAUTHORIZED)
+				.errorMesage(ex.getErrorMessage())
+				.build();
+
+		return getResponseEntity(apiErrorResponse);
+	}
+
+	@ExceptionHandler(value = {UserManagementNotAuthenticatedException.class})
+	public ResponseEntity<ApiErrorResponse> handleNotAuthenticatdException(UserManagementNotAuthenticatedException ex) {
+		log.error(ex.getMessage());
+		ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
+				.code(SC_FORBIDDEN)
 				.errorMesage(ex.getErrorMessage())
 				.build();
 
