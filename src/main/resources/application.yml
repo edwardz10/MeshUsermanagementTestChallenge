@@ -17,3 +17,7 @@ logging:
         security: DEBUG
 
 jwt.secret: mesh
+
+application.security:
+  username: john
+  password: smith

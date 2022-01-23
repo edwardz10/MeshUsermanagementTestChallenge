@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -77,6 +78,17 @@ public class ControllerExceptionHandler {
 		log.error(ex.getMessage());
 		ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
 				.code(SC_INTERNAL_SERVER_ERROR)
+				.errorMesage(ex.getMessage())
+				.build();
+
+		return getResponseEntity(apiErrorResponse);
+	}
+
+	@ExceptionHandler(value = {UsernameNotFoundException.class})
+	public ResponseEntity<ApiErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+		log.error(ex.getMessage());
+		ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
+				.code(SC_BAD_REQUEST)
 				.errorMesage(ex.getMessage())
 				.build();
 

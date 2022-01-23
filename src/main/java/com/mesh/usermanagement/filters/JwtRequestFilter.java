@@ -4,10 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mesh.usermanagement.exception.UserManagementNotAuthorizedException;
 import com.mesh.usermanagement.model.ApiErrorResponse;
 import com.mesh.usermanagement.service.JwtTokenService;
+import com.mesh.usermanagement.service.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,8 +30,13 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+	private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/authenticate");
+
 	@Autowired
 	private JwtTokenService jwtTokenService;
+
+	@Autowired
+	private JwtUserDetailsService jwtUserDetailsService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -32,41 +44,57 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-		final String requestTokenHeader = request.getHeader("Authorization");
-
-		if (requestTokenHeader == null || (!requestTokenHeader.startsWith("Bearer ")
-			&& !requestTokenHeader.startsWith("bearer"))) {
-			response.setStatus(SC_UNAUTHORIZED);
-			response.getWriter().write(objectMapper.writeValueAsString(unauthorizedApiError()));
-			response.flushBuffer();
-			return;
-		}
-
-		String username = null;
-		String jwtToken = requestTokenHeader.split(" ")[1];
-
-		try {
-			try {
-				username = jwtTokenService.getUsernameFromToken(jwtToken);
-			} catch (IllegalArgumentException e) {
-				throw new UserManagementNotAuthorizedException("Unable to get JWT Token");
-			} catch (ExpiredJwtException e) {
-				throw new UserManagementNotAuthorizedException("JWT Token has expired");
-			} catch (MalformedJwtException e) {
-				throw new UserManagementNotAuthorizedException(e.getMessage());
-			}
-
-			// Once we get the token validate it.
-			if (StringUtils.isEmpty(username)) {
-				throw new UserManagementNotAuthorizedException("Username not found");
-			}
-
+		if (this.requestMatcher.matches(request)) {
 			chain.doFilter(request, response);
-		} catch (UserManagementNotAuthorizedException e) {
-			response.setStatus(SC_FORBIDDEN);
-			response.getWriter().write(objectMapper.writeValueAsString(forbiddenApiError(e.getErrorMessage())));
-			response.flushBuffer();
+		} else {
+			final String requestTokenHeader = request.getHeader("Authorization");
+
+			if (requestTokenHeader == null || (!requestTokenHeader.startsWith("Bearer ")
+					&& !requestTokenHeader.startsWith("bearer"))) {
+				response.setStatus(SC_UNAUTHORIZED);
+				response.getWriter().write(objectMapper.writeValueAsString(unauthorizedApiError()));
+				response.flushBuffer();
+				return;
+			}
+
+			String username = null;
+			String jwtToken = requestTokenHeader.split(" ")[1];
+
+			try {
+				try {
+					username = jwtTokenService.getUsernameFromToken(jwtToken);
+				} catch (IllegalArgumentException e) {
+					throw new UserManagementNotAuthorizedException("Unable to get JWT Token");
+				} catch (ExpiredJwtException e) {
+					throw new UserManagementNotAuthorizedException("JWT Token has expired");
+				} catch (MalformedJwtException e) {
+					throw new UserManagementNotAuthorizedException(e.getMessage());
+				}
+
+				//Once we get the token validate it.
+				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+					UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+
+					// if token is valid configure Spring Security to manually set authentication
+					if (jwtTokenService.validateToken(jwtToken, userDetails)) {
+
+						UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+								userDetails, null, userDetails.getAuthorities());
+						usernamePasswordAuthenticationToken
+								.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+						SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+					}
+				}
+
+				chain.doFilter(request, response);
+			} catch (UserManagementNotAuthorizedException e) {
+				response.setStatus(SC_FORBIDDEN);
+				response.getWriter().write(objectMapper.writeValueAsString(forbiddenApiError(e.getErrorMessage())));
+				response.flushBuffer();
+			}
 		}
+
 	}
 
 	private ApiErrorResponse unauthorizedApiError() {
