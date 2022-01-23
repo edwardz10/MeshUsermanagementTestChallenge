@@ -19,6 +19,7 @@ public class ProfileEntity {
 
     private String externalId;
     private Integer cash;
+    private Integer maxCash;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)

@@ -18,6 +18,8 @@ logging:
 
 jwt.secret: mesh
 
-application.security:
-  username: john
-  password: smith
+application:
+  security:
+    username: john
+    password: smith
+  increment.delay: 20000

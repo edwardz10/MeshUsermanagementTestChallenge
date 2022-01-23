@@ -92,6 +92,7 @@ public class ConversionUtils {
         ? UUID.randomUUID().toString()
         : profile.getId());
     profileEntity.setCash(profile.getKopeks() + profile.getRoubles()*100);
+    profileEntity.setMaxCash((int) (profileEntity.getCash()*2.07));
     return profileEntity;
   }
 
