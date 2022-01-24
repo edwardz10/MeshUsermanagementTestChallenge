@@ -4,6 +4,7 @@ import com.mesh.usermanagement.model.jwt.JwtRequest;
 import com.mesh.usermanagement.model.jwt.JwtResponse;
 import com.mesh.usermanagement.service.jwt.JwtTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationController {
 
 	private final AuthenticationManager authenticationManager;
@@ -30,6 +32,7 @@ public class JwtAuthenticationController {
 
 	@PostMapping("/authenticate")
 	public ResponseEntity<JwtResponse> createToken(@RequestBody JwtRequest jwtRequest) {
+		log.info("Request to get an acess token: {}", jwtRequest);
 		authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
 
 		final UserDetails userDetails = jwtInMemoryUserDetailsService

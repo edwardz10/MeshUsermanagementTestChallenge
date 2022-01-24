@@ -79,6 +79,7 @@ public class UserService {
   }
 
   public List<User> getAllUsers(FilterParameters filterParameters) {
+    log.info("Get all users with filtering parameters: {}", filterParameters);
     List<User> userList = new ArrayList<>();
     val usersIterable = userRepository.findAll();
 
