@@ -57,8 +57,8 @@ class UserServiceTest {
 	@Test
 	public void createUserAndGetItByIdTest() {
 		var newUserEntity = new UserEntity();
-		newUserEntity.setName("Name");
-		newUserEntity.setEmail("email@email.com");
+		newUserEntity.setName("Name2");
+		newUserEntity.setEmail("email2@email.com");
 		newUserEntity.setAge(11);
 		val newProfile = new ProfileEntity();
 		newProfile.setCash(12000);
