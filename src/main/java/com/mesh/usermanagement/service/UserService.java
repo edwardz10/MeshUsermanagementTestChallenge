@@ -14,6 +14,8 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +73,14 @@ public class UserService {
 
       return ConversionUtils.convert(userEntity);
     }
+  }
+
+  public List<User> getAllUsers() {
+    List<User> userList = new ArrayList<>();
+    val usersIterable = userRepository.findAll();
+
+    usersIterable.forEach(userEntity -> userList.add(ConversionUtils.convert(userEntity)));
+    return userList;
   }
 
   public User getUser(String userId) {

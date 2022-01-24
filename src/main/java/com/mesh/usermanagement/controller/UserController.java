@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +33,12 @@ public class UserController {
     return updatedUser == null
         ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         : ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+  }
+
+  @GetMapping(value = "/users", produces = "application/json")
+  public ResponseEntity<List<User>> getUserAllUsers() {
+    log.info("Request to get all users");
+    return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
   }
 
   @GetMapping(value = "/users/{userId}", produces = "application/json")

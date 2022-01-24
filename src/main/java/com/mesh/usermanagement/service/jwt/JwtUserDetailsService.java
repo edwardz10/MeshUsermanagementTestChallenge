@@ -1,4 +1,4 @@
-package com.mesh.usermanagement.service;
+package com.mesh.usermanagement.service.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.mesh.usermanagement.service;
+package com.mesh.usermanagement.service.jwt;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

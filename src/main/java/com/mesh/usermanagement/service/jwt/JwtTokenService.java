@@ -1,4 +1,4 @@
-package com.mesh.usermanagement.service;
+package com.mesh.usermanagement.service.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
