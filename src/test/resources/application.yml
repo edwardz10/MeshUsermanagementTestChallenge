@@ -1,10 +1,9 @@
-server.servlet.context-path: /usermanagement/v1
-
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/usermanagement
-    username: postgres
-    password: postgres
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,12 +11,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
 
 jwt.secret: mesh
 
@@ -27,4 +20,4 @@ application:
     password: smith
   increment.delay: 20000
 
-cacheIncrement.enabled: true
+cacheIncrement.enabled: false

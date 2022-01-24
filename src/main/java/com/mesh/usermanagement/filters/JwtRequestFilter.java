@@ -30,9 +30,6 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private final RequestMatcher authenticatorRequestMatcher = new AntPathRequestMatcher("/authenticate");
-	private final RequestMatcher swaggerRequestMatcher1 = new AntPathRequestMatcher( "/swagger-ui*");
-	private final RequestMatcher swaggerRequestMatcher2 = new AntPathRequestMatcher( "/v2/api-docs");
-	private final RequestMatcher swaggerRequestMatcher3 = new AntPathRequestMatcher( "/webjars/**");
 
 	@Autowired
 	private JwtTokenService jwtTokenService;
@@ -46,10 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-		if (this.authenticatorRequestMatcher.matches(request)
-			|| this.swaggerRequestMatcher1.matches(request)
-			|| this.swaggerRequestMatcher2.matches(request)
-			|| this.swaggerRequestMatcher3.matches(request)) {
+		if (this.authenticatorRequestMatcher.matches(request)) {
 			chain.doFilter(request, response);
 		} else {
 			final String requestTokenHeader = request.getHeader("Authorization");
@@ -99,7 +93,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				response.flushBuffer();
 			}
 		}
-
 	}
 
 	private ApiErrorResponse unauthorizedApiError() {
