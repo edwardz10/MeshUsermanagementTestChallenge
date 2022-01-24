@@ -3,6 +3,7 @@ package com.mesh.usermanagement.service;
 import com.mesh.usermanagement.entity.ProfileEntity;
 import com.mesh.usermanagement.entity.UserEntity;
 import com.mesh.usermanagement.exception.UserManagementServiceException;
+import com.mesh.usermanagement.model.FilterParameters;
 import com.mesh.usermanagement.model.User;
 import com.mesh.usermanagement.repository.PhoneRepository;
 import com.mesh.usermanagement.repository.ProfileRepository;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -75,11 +78,33 @@ public class UserService {
     }
   }
 
-  public List<User> getAllUsers() {
+  public List<User> getAllUsers(FilterParameters filterParameters) {
     List<User> userList = new ArrayList<>();
     val usersIterable = userRepository.findAll();
 
-    usersIterable.forEach(userEntity -> userList.add(ConversionUtils.convert(userEntity)));
+    usersIterable.forEach(userEntity -> {
+      boolean isOk = true;
+
+      if (filterParameters.getName() != null && !userEntity.getName().contains(filterParameters.getName())) {
+        isOk = false;
+      }
+
+      if (isOk && filterParameters.getEmail() != null && !userEntity.getEmail().equals(filterParameters.getEmail())) {
+        isOk = false;
+      }
+
+      if (isOk && filterParameters.getAge() != null && !Objects.equals(userEntity.getAge(), filterParameters.getAge())) {
+        isOk = false;
+      }
+
+      if (isOk && filterParameters.getPhone() != null && !userEntity.getPhoneNumbersSet().contains(filterParameters.getPhone())) {
+        isOk = false;
+      }
+
+      if (isOk) {
+        userList.add(ConversionUtils.convert(userEntity));
+      }
+    });
     return userList;
   }
 

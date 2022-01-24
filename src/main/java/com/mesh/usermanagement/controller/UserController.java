@@ -1,6 +1,7 @@
 package com.mesh.usermanagement.controller;
 
 import com.mesh.usermanagement.exception.UserManagementServiceException;
+import com.mesh.usermanagement.model.FilterParameters;
 import com.mesh.usermanagement.model.User;
 import com.mesh.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,19 @@ public class UserController {
   }
 
   @GetMapping(value = "/users", produces = "application/json")
-  public ResponseEntity<List<User>> getUserAllUsers() {
+  public ResponseEntity<List<User>> getUserAllUsers(@RequestParam(required = false) String name,
+                                                    @RequestParam(required = false) Integer age,
+                                                    @RequestParam(required = false) String email,
+                                                    @RequestParam(required = false) String phone) {
+    FilterParameters filterParameters = FilterParameters.builder()
+        .name(name)
+        .age(age)
+        .email(email)
+        .phone(phone)
+        .build();
+
     log.info("Request to get all users");
-    return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
+    return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers(filterParameters));
   }
 
   @GetMapping(value = "/users/{userId}", produces = "application/json")

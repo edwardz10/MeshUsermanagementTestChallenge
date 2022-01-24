@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="users")
@@ -34,5 +35,9 @@ public class UserEntity implements Serializable {
 
     public void addPhone(PhoneEntity phoneEntity) {
         phones.add(phoneEntity);
+    }
+
+    public Set<String> getPhoneNumbersSet() {
+        return phones.stream().map(PhoneEntity::getValue).collect(Collectors.toSet());
     }
 }
