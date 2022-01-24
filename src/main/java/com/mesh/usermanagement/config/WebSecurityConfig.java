@@ -5,6 +5,7 @@ import com.mesh.usermanagement.service.jwt.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -39,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .csrf().disable()
         .authorizeRequests()
+          .antMatchers("/v2/api-docs", "/swagger-ui.html", "/webjars/**").permitAll()
           .anyRequest().authenticated()
         .and()
           .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
@@ -49,7 +51,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity webSecurity) {
-    webSecurity.ignoring().antMatchers("/authenticate");
+    webSecurity.ignoring()
+        .antMatchers("/authenticate", "/swagger-resources/", "/webjars/")
+        .antMatchers(HttpMethod.OPTIONS, "/**");
   }
 
   @Autowired
